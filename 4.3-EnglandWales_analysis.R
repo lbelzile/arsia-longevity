@@ -143,6 +143,7 @@ for(i in seq_along(thresh)){
                              rtrunc = rtrunc,
                              family = "gp",
                              export = TRUE))
+  fit_gp[[i]] <- mod3
   try(print(anova(mod1, mod2))) # Gompertz vs exp
   try(print(anova(mod1, mod3))) # GP vs exp
 }
@@ -237,6 +238,8 @@ g2 <-  ggplot(data = curvwise, aes(x = x, y = y,
   geom_lineribbon(data = curvwise,
                   aes(ymin = .lower, ymax = .upper),
                   alpha = 0.1, show.legend = FALSE) +
+  geom_line(aes(x = x, y = .lower,color = distribution), lwd = 0.5) +
+  geom_line(aes(x = x, y = .upper,color = distribution), lwd = 0.5) +
   geom_line(aes(lty = distribution), lwd = 1.5) +
   coord_cartesian(ylim = c(0, 4),
                   expand = FALSE,
