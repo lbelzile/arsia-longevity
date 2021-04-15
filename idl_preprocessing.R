@@ -124,7 +124,7 @@ left_join(y = sf_wide, by = c("country")) %>%
                        bdate + days(1) + years(105),
                        bdate + years(105))
          ) %>%
-  select(! wave:group) %>%
+  select(! dyear, group) %>%
   filter(if_else(ageyear >= 110,
                  ddate >= c1 & ddate <= c2,
                  ddate >= d1 & ddate <= d2)) %>%
