@@ -3,7 +3,6 @@
 # supercentenarian; as such, the truncation bounds were
 # calculated using the date at which data collection starts
 # and ends for supercentenarians (110+)
-
 library(dplyr)
 library(lubridate)
 library(longevity)
@@ -13,7 +12,7 @@ data(idl2021, package = "longevity")
 # Threshold 110, but exact number of days can vary
 # from one individual to the next because of leap years
 u110d <- 40176L
-
+u110 <- 110
 idl <- idl2021 %>%
   filter(ageyear >= 110) %>%
   mutate(
@@ -126,8 +125,19 @@ north_europe_split <-
   north_europe %>%
   mutate(
     deathgr = ddate > ymd("2006-12-31"),
-    c1 = if_else(ddate > ymd("2006-12-31"), ymd("2007-01-01"), c1),
-    c2 = if_else(ddate <= ymd("2006-12-31"), ymd("2006-12-31"), c2),
+    c1 = if_else(ddate > ymd("2006-12-31"), pmax(c1, ymd("2007-01-01")), c1),
+    c2 = if_else(ddate <= ymd("2006-12-31"), pmin(c2, ymd("2006-12-31")), c2),
+    ltrunc = as.integer(c1 - bdate) / 365.25,
+    rtrunc = as.integer(c2 - bdate) / 365.25,
+    nyears = ndays / 365.25
+  )
+
+world_split <-
+  world %>%
+  mutate(
+    deathgr = ddate > ymd("2001-12-31"),
+    c1 = if_else(ddate > ymd("2001-12-31"), pmax(c1, ymd("2002-01-01")), c1),
+    c2 = if_else(ddate <= ymd("2001-12-31"), pmin(c2, ymd("2001-12-31")), c2),
     ltrunc = as.integer(c1 - bdate) / 365.25,
     rtrunc = as.integer(c2 - bdate) / 365.25,
     nyears = ndays / 365.25
@@ -146,7 +156,77 @@ death_split_NE <-
       covariate = deathgr
     )
   )
+
+death_split_NE_1 <-
+  with(
+    north_europe_split %>% dplyr::filter(deathgr == TRUE),
+    fit_elife(
+      time = nyears,
+      thresh = u110,
+      ltrunc = ltrunc,
+      rtrunc = rtrunc,
+      family = "exp"
+    )
+  )
+
+death_split_NE_2 <-
+  with(
+    north_europe_split %>% dplyr::filter(deathgr == FALSE),
+    fit_elife(
+      time = nyears,
+      thresh = u110,
+      ltrunc = ltrunc,
+      rtrunc = rtrunc,
+      family = "exp"
+    )
+  )
 death_split_NE
+death_split_NE_1
+death_split_NE_2
+wald_NE <- (death_split_NE_2$par - death_split_NE_1$par) / sqrt(death_split_NE_1$std.error^2 + death_split_NE_2$std.error^2)
+pval_wald_NE <- 2*(1-pnorm(wald_NE))
+death_split_WR <-
+  with(
+    world_split,
+    test_elife(
+      time = nyears,
+      thresh = u110,
+      ltrunc = ltrunc,
+      rtrunc = rtrunc,
+      family = "exp",
+      covariate = deathgr
+    )
+  )
+
+death_split_WR_1 <-
+  with(
+    world_split %>% dplyr::filter(deathgr == TRUE),
+    fit_elife(
+      time = nyears,
+      thresh = u110,
+      ltrunc = ltrunc,
+      rtrunc = rtrunc,
+      family = "exp"
+    )
+  )
+
+death_split_WR_2 <-
+  with(
+    world_split %>% dplyr::filter(deathgr == FALSE),
+    fit_elife(
+      time = nyears,
+      thresh = u110,
+      ltrunc = ltrunc,
+      rtrunc = rtrunc,
+      family = "exp"
+    )
+  )
+death_split_WR
+death_split_WR_1
+death_split_WR_2
+wald_WR <- (death_split_WR_2$par - death_split_WR_1$par) / sqrt(death_split_WR_1$std.error^2 + death_split_WR_2$std.error^2)
+pval_wald_WR <- 2*(1-pnorm(wald_WR))
+
 
 #-------------------------------------------------------
 # Analysis of data for countries other than
