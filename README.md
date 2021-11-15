@@ -2,7 +2,7 @@
 
 This folder contains the code used to produce the analysis and figures in 
 
-> Belzile, L.R., Davison, A.C., Gampe, J. Rootzén, H and D. Zholud (2022). Is there a cap on longevity?, submitted to ARSIA
+> Léo R. Belzile, Anthony C. Davison, Jutta Gampe, Holger Rootzén & Dmitrii Zholud (2022). *Is There a Cap on Longevity? A Statistical Review*, Annual Review of Statistics and its Application, **9**:18.1–18.25. [`DOI :10.1146/annurev-statistics-040120-025426`](https://doi.org/10.1146/annurev-statistics-040120-025426)
 
 The **R** package [`longevity`](https://github.com/lbelzile/longevity) can be installed from Github. It contains two datasets, `dutch` and `japanese`, previously published in other papers. 
 
