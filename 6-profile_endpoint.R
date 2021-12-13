@@ -4,8 +4,7 @@
 #### Data for IDL can be downloaded from         ####
 #### supercentenarian.org, but the database      ####
 #### is subject to change. Most data cannot      ####
-#### be shared due to privacy requirements       ####                                ####
-#####################################################
+#### be shared due to privacy requirements       ####      #####################################################
 
 
 # Compute the profile log likelihood of the GP endpoint
